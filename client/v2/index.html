@@ -3,72 +3,130 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>👕 Clear Fahion | Environmentally & human-friendly clothes</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <h1>Clear fashion</h1>
-    <section id="options">
-      <div id="show">
-        <label for="show-select">Show:</label>
-        <select name="show" id="show-select">
-          <option value="12">12</option>
-          <option value="24">24</option>
-          <option value="48">48</option>
-        </select>
-      </div>
-      <div id="page">
-        <label for="page-select">Go to page:</label>
-        <select name="page" id="page-select"> </select>
-      </div>
-      <div id="filters">
-        <span>By reasonable price</span>
-        <span>By recently released</span>
-        <div id="brand">
-          <label for="brand-select">By brands:</label>
-          <select name="brand" id="brand-select"> </select>
-        </div>
-      </div>
-      <div id="sort">
-        <label for="sort-select">Sort:</label>
-        <select name="sort" id="sort-select">
-          <option value="price-asc">Cheaper</option>
-          <option value="price-desc">Expensive</option>
-          <option value="date-asc">Recently released</option>
-          <option value="date-desc">Anciently released</option>
-        </select>
-      </div>
-    </section>
-    <section id="indicators">
-      <h2>Indicators</h2>
-      <div>
-        <span>Number of products</span>
-        <span id="nbProducts">0</span>
-      </div>
-      <div>
-        <span>Number of brands</span>
-        <span id="nbBrands">0</span>
-      </div>
-      <div>
-        <span>Number of new products</span>
-        <span>0</span>
-      </div>
-      <div>
-        <span>p50 price value</span>
-        <span>0</span>
-      </div>
-      <div>
-        <span>p90 price value</span>
-        <span>0</span>
-      </div>
-      <div>
-        <span>p95 price value</span>
-        <span>0</span>
-      </div>
-      <div>
-        <span>Last released date</span>
-        <span>2020-01-01</span>
-      </div>
-    </section>
-    <section id="products"></section>
-    <script type="text/javascript" charset="UTF-8" src="portfolio.js"></script>
+    <h2>Clear Fashion</h2>
+    <!--Section Options-->
+        <section class="option">
+          <span class="title-pattern">
+            <h3>Options</h3>
+          </span>  
+          <style>
+            #show {
+              background-color: #f0f0f0;
+              padding: 10px;
+              border-radius: 5px;
+              margin-bottom: 20px;
+            }
+            
+            .label-select {
+              color: #555;
+              font-weight: bold;
+              margin-right: 10px;
+            }
+            
+            .selection-2 {
+              background-color: #fff;
+              color: #555;
+              border: 1px solid #ccc;
+              padding: 5px;
+              border-radius: 3px;
+            }
+            
+            .selection-2:hover, .selection-2:focus {
+              border: 1px solid #aaa;
+              outline: none;
+            }
+            
+            .selection-2 option {
+              background-color: #fff;
+              color: #555;
+            }
+          </style>
+          
+          <div id="show" class="div-select">
+            <span class="label-select">Show</span>
+            <select name="show" id="show-select" class="selection-2">
+              <option value="12">12</option>
+              <option value="24">24</option>
+              <option value="48">48</option>
+            </select>
+          </div>
+          
+  
+          <!--Select the page to render-->
+  
+          <div id="show" class="div-select">
+            <span class="label-select">Select your page</span>
+            <select name="page" id="page-select" class="selection-2">
+            </select>
+          </div>
+          
+          <!--Select the brand-->
+  
+          <div id="show" class="div-select">
+            <span class="label-select">Select your brand</span>
+            <select name="brand" id="brand-select" class="selection-2">
+            </select>
+          </div>
+  
+  
+          <div id="show" class="div-select">
+            <span class="label-select">Sort</span>
+            <select name="sort" id="sort-select" class="selection-2">
+              <option value="----">----</option>
+                <option value="price-asc">Cheaper</option>
+                <option value="price-desc">Expensive</option>
+                <option value="date-asc">Recently released</option>
+                <option value="date-desc">Anciently released</option>
+            </select>
+          </div>
+  
+          <div id="show">
+            <input type="checkbox" id="reasonable-price" name="price">
+            <label for="scales">By reasonable price</label>
+          </div>   
+          
+          <div id="show">
+            <input type="checkbox" id="recently-released" name="released">
+            <label for="scales">By recently released</label>
+          </div>
+        </section>
+  
+        <section id='indicators' class='indicators'>
+          <h2 class="section-title">Indicators</h2>
+          <div class='indicator'>
+            <span class="indicator-label">Number of products:</span>
+            <span id="nbProducts" class="indicator-value">0</span>
+          </div>
+          <div class='indicator'>
+            <span class="indicator-label">Number of new products:</span>
+            <span id="nbNewProducts" class="indicator-value">0</span>
+          </div>
+          <div class='indicator'>
+            <span class="indicator-label">P50 price value:</span>
+            <span id="p50" class="indicator-value">0</span>
+          </div>
+          <div class='indicator'>
+            <span class="indicator-label">P90 price value:</span>
+            <span id="p90" class="indicator-value">0</span>
+          </div>
+          <div class='indicator'>
+            <span class="indicator-label">P95 price value:</span>
+            <span id="p95" class="indicator-value">0</span>
+          </div>
+          <div class='indicator'>
+            <span class="indicator-label">Last released date:</span>
+            <span id='last-release' class="indicator-value">2020-01-01</span>
+          </div>
+        </section>
+  
+        <section id="products" class="products">
+          <h2 class="title-pattern">Products</h2>
+        </section>
+        
+        <script type="text/javascript" src="portfolio.js"></script>
+        
   </body>
-</html>
+  </html>
