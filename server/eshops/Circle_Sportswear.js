@@ -1,50 +1,28 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
-/**
- * Parse webpage e-shop
- * @param  {String} data - html response
- * @return {Array} products
- */
+(async () => {
+  const browser = await puppeteer.launch({headless: true});
+  const page = await browser.newPage();
+  await page.goto('https://shop.circlesportswear.com/collections/nouveautes');
 
+  const products = await page.evaluate(() => {
+    const productsList = [];
+    const elements = document.querySelectorAll('#product-grid > li');
+    for (let i = 0; i < elements.length; i++) {
+      const product = {};
+      const element = elements[i];
 
+      product.brand = 'Circle_Sportswear';
+      product.image = element.querySelector('#product-grid > li > div > div > div > div > div > img')?.src;
+      product.title = element.querySelector('#product-grid > li > div > div > div.card__content > div.card__information > h3')?.textContent.trim();
+      product.price = element.querySelector('#product-grid > li > div > div > div.card__content > div.card__information > div.card-information > div > div > div.price__sale > span.price-item.price-item--sale.price-item--last > span')?.textContent.trim();
+      product.quality = element.querySelector('#product-grid > li > div > div > div.card__content > div.card__information > h4')?.textContent.trim();
 
-const parse = data => {
-  const $ = cheerio.load(data);
-
-  return $('.card-wrapper').map((i, element) => {
-    const name = $(element).find('.card__heading').text().trim().replace(/\s/g, ' ');
-
-    const price = parseInt($(element).find('.money').text());
-
-    const date = Date();  
-
-    return {name, price, date};
-  }).get(); 
-};
-
-
-
-/**
- * Scrape all the products for a given url page
- * @param  {[type]}  url
- * @return {Array|null}
- */
-module.exports.scrape = async url => {
-  try {
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const body = await response.text();
-
-      return parse(body);
+      productsList.push(product);
     }
+    return productsList;
+  });
 
-    console.error(response);
-
-    return null;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+  console.log(products);
+  await browser.close();
+})();

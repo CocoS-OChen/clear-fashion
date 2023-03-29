@@ -1,82 +1,36 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
-/**
- * Parse webpage e-shop
- * @param  {String} data - html response
- * @return {Array} products
- */
-const parse = data => {
-  const $ = cheerio.load(data);
-  const productList = $('.productList-container .productList');
+(async function scrape() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('https://www.dedicatedbrand.com/en/men/news');
 
-  setTimeout(() => {}, 30000);
+  const products = await page.evaluate(() => {
+    const productList = [];
+    const productNodes = document.querySelectorAll('.productList-item');
 
-  return productList.map((i, element) => {
-    const name = $(element).find('.productList-title').text().trim().replace(/\s/g, ' ');
-    const link = $(element).find('.productList-link').attr('href').replace('/en/','https://www.dedicatedbrand.com/en/');
-    const price = parseInt($(element).find('.productList-link').find('.productList-price').text());
-    const image =  $(element).find('.js-lazy').attr('data-srcset');
-    const date = new Date().toString();
+    for (let i = 0; i < productNodes.length; i++) {
+      const productNode = productNodes[i];
 
-    return { name, price, link, image, date };
-  }).get();
-};
+      const brand = 'Dedicated';
+      const image = productNode.querySelector('img.productList-img').getAttribute('src');
+      const title = productNode.querySelector('.productList-title').textContent.trim();
+      const price = parseFloat(productNode.querySelector('.productList-price').textContent.replace(/[^\d,.]/g, '').replace(',', '.'));
+      const quality = productNode.querySelector('.productList-subtitle').textContent.trim();
 
-
-
-
-
-/**
- * Scrape all the products for a given url page
- * @param  {[type]}  url
- * @return {Array|null}
- */
-module.exports.scrape = async url => {
-  try {
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const body = await response.text();
-
-      return parse(body);
+      productList.push({
+        brand,
+        image,
+        title,
+        price,
+        quality
+      });
     }
 
-    console.error(response);
+    return productList;
+  });
 
-    return null;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+  console.log(products);
 
-/*
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-
-/**
- * Parse webpage e-shop
- * @param  {String} data - html response
- * @return {Array} products
- 
-const parse = data => {
-  const $ = cheerio.load(data);
-
-  return $('.productList-container .productList')
-    .map((i, element) => {
-      const name = $(element)
-        .find('.productList-title')
-        .text()
-        .trim()
-        .replace(/\s/g, ' ');
-      const price = parseInt(
-        $(element)
-          .find('.productList-price')
-          .text()
-      );
-
-      return {name, price};
-    })
-    .get();
-};
+  await browser.close();
+})();

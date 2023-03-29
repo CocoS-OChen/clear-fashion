@@ -196,10 +196,6 @@ const render = (products, pagination) => {
 };
 
 /**
- * Declaration of all Listeners
- */
-
-/**
  * Select the number of products to display
  * @type {[type]}
  */
@@ -215,7 +211,6 @@ selectShow.addEventListener('change', async event => {
   }
 });
 
-// Feature 1 Browse pages
 
 selectPage.addEventListener('change', async event => {
   const page = parseInt(event.target.value);
@@ -229,7 +224,6 @@ selectPage.addEventListener('change', async event => {
 });
 
 
-// Feature 2 brand selection
 
 selectBrand.addEventListener('change', event => {
   const selectedBrand = event.target.value;
@@ -238,7 +232,6 @@ selectBrand.addEventListener('change', event => {
   render(filtered_products, currentPagination);
 });
 
-// Feature 3 date selection
 
 recentlyReleased.addEventListener('change', function() {
   recent_filter = this.checked ? x => Math.trunc((Date.now() - Date.parse(x.released)) / (1000 * 3600 * 24)) < 14 : x => true;
@@ -247,15 +240,11 @@ recentlyReleased.addEventListener('change', function() {
 });
 
 
-// Feature 4 price selection
-
 reasonablePrice.addEventListener('change', function() {
   reasonable_filter = this.checked ? x => x.price <= 50 : x => true;
   filtered_products = apply_all_filters(currentProducts);
   render(filtered_products, currentPagination);
 });
-
-// Feature 5-6 price selection
 
 function sortByPrice(a, b, order) {
   if (a.price < b.price) {
@@ -300,10 +289,6 @@ function handleSortChange(event) {
 }
 
 selectSort.addEventListener("change", handleSortChange);
-
-
-
-//---------------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {

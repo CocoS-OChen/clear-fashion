@@ -1,48 +1,27 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
-/**
- * Parse webpage e-shop
- * @param  {String} data - html response
- * @return {Array} products
- */
-const parse = data => {
-  const $ = cheerio.load(data);
-
-  return $('.products-list__block')
-    .map((i, element) => {
-      const date = Date()  
-      const name = $(element).find('.text-reset').text().trim().replace(/\s/g, ' ');
-      const link = $(element).find('.text-reset').attr('href');
-      const price = parseInt($(element).find('.price').text());
-      const image = $(element).find('.w-100').attr('data-full-size-image-url');
-      return {name, price, link, image, date};
-    })
-    .get();
-};
-
-/*document.querySelector(All)('.class')*/
-
-/**
- * Scrape all the products for a given url page
- * @param  {[type]}  url
- * @return {Array|null}
- */
-module.exports.scrape = async url => {
-  try {
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const body = await response.text();
-
-      return parse(body);
+(async function scrapeData() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('https://www.montlimart.com/72-nouveautes');
+  
+  const products = await page.evaluate(() => {
+    const productList = [];
+    const productElements = document.querySelectorAll('#js-product-list > div.products-list.row > div');
+    
+    for (let element of productElements) {
+      productList.push({
+        brand: 'Montlimart',
+        image: element.querySelector('#js-product-list > div > div > article > div > a > img')?.getAttribute('data-src'),
+        title: element.querySelector('#js-product-list > div > div > article > div > h3')?.textContent.trim(),
+        price: parseFloat(element.querySelector('#js-product-list > div > div > article > div > div > span')?.textContent),
+        color: element.querySelector('#js-product-list > div > div > article > div > div').textContent.trim(),
+      });
     }
-
-    console.error(response);
-
-    return null;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+    
+    return productList;
+  });
+  
+  console.log(products);
+  await browser.close();
+})();
