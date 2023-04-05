@@ -1,50 +1,66 @@
-const dedicatedbrand = require('./eshops/dedicatedbrand'); 
+const dedicatedbrand = require('./eshops/dedicatedbrand');
 const montlimartbrand = require('./eshops/Montlimart');
-const circlesportswear = require('./eshops/Circle_Sportswear');
+const fs = require('fs');
+const { promisify } = require('util');
 
-const link = [
-  "https://shop.circlesportswear.com/collections/all", 
-  "montlimart", 
-  "dedicatedbrand" 
-];
+const writeJsonToFile = (filePath, jsonData) => {
+  const serializedData = JSON.stringify(jsonData, null, 2);
 
-async function sandbox (eshop = undefined, number = -1) {
-  if(number == -1 && eshop == undefined) { 
-    var allProducts = [];
-    for(var i = 0; i < link.length; i++) {
-      allProducts.push(...await sandbox(link[i], i)); 
-    }
-    const fs = require('fs');
-    allProducts = allProducts.filter((v,i,a)=>a.findIndex(t=>(t.uuid === v.uuid))===i); 
-    return allProducts;
+  if (fs.existsSync(filePath)) {
+    fs.appendFileSync(filePath, `${serializedData}\n`);
+  } else {
+    fs.writeFileSync(filePath, serializedData);
   }
-  else { 
-    try {
-      var products = "";
-      if(eshop == 'montlimart'){ // Si l'eshop est Montlimart, on récupère les liens vers les différentes pages de produits
-        link.push(...await montlimartbrand.getLinks());
-        return [];
-      }
-      else if(eshop.includes('montlimart')){ // Si l'eshop est Montlimart, on exécute la fonction de scraping pour récupérer les produits d'une page
-        products = await montlimartbrand.scrape(eshop);
-      }
-      else if(eshop == 'dedicatedbrand'){ // on récupère tous les produits
-        products = await dedicatedbrand.getProducts();
-      }
-      else if(eshop.includes('dedicatedbrand')){ // on exécute la fonction de scraping pour récupérer les produits d'une page
-        products = await dedicatedbrand.scrape(eshop);
-      }
-      else if(eshop.includes('circlesportswear')){
-        products = await circlesportswear.scrape(eshop);
-      }
-      else { 
-        console.log('eshop not found');
+};
+
+async function scrapeAndSaveData(eshopName) {
+  try {
+    console.log(`🕵️‍♀️  Browsing ${eshopName} eshop...`);
+
+    switch (eshopName.toLowerCase()) {
+      case 'dedicated':
+        const dedicatedLinks = require('./navLinksDed.json');
+        const dedicatedProducts = [];
+
+        for (const link of dedicatedLinks) {
+          const data = await dedicatedbrand.scrape(link);
+          dedicatedProducts.push(...data);
+        }
+
+        writeJsonToFile('data_dedicated.json', dedicatedProducts);
+        console.log(dedicatedProducts);
+        break;
+
+      case 'montlimart':
+        const montlimartLinks = require('./navLinksMon.json');
+        const montlimartProducts = [];
+
+        for (const link of montlimartLinks) {
+          const data = await montlimartbrand.scrape(link);
+          montlimartProducts.push(...data);
+        }
+
+        writeJsonToFile('data_montlimart.json', montlimartProducts);
+        console.log(montlimartProducts);
+        break;
+
+      default:
+        console.log(`❌  Eshop ${eshopName} is not supported.`);
         process.exit(1);
-      }
-      console.log(`Browsing ${eshop} eshop`);
     }
-    catch (error) {
-      console.log(` An error occurred while browsing ${eshop} eshop: ${error.message}`);
-    }
+
+    console.log(`✅  Successfully scraped and saved data to "data_${eshopName.toLowerCase()}.json" file.`);
+    process.exit(0);
+  } catch (error) {
+    console.error(`❌  An error occurred while scraping data from ${eshopName} eshop:`, error);
+    process.exit(1);
   }
 }
+
+const [, , eshopName] = process.argv;
+
+scrapeAndSaveData(eshopName);
+
+module.exports = {
+  scrapeAndSaveData,
+};

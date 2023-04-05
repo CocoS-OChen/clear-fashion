@@ -1,9 +1,8 @@
 const { MongoClient } = require('mongodb');
 
-const MONGO_URI = 'mongodb+srv://cocogrep:Db-VE8%r_yZW35z@luster0.izdiwww.mongodb.net/test?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://cocogrep:Db-VE8%r_yZW35z@cluster0.izdiwww.mongodb.net/test?retryWrites=true&w=majority';
 const MONGO_DB_NAME = 'clearfashion';
 const MONGO_COLLECTION_NAME = 'clearfashion_collection';
-
 const fs = require('fs');
 
 let globalCollection = null;
@@ -36,6 +35,13 @@ async function insertProductsToDatabase() {
     const productsToInsert = JSON.parse(fs.readFileSync('data_montlimart.json'));
     const insertedProducts = await globalCollection.insertMany(productsToInsert);
     console.log(`${insertedProducts.insertedCount} products inserted to the ${MONGO_COLLECTION_NAME} collection.`);
+    const productsToInsert2 = JSON.parse(fs.readFileSync('data_Circle_sportwear.json'));
+    const insertedProducts2 = await globalCollection.insertMany(productsToInsert2);
+    console.log(`${insertedProducts2.insertedCount} products inserted to the ${MONGO_COLLECTION_NAME} collection.`);
+    const productsToInsert3 = JSON.parse(fs.readFileSync('data_Dedicated.json'));
+    const insertedProducts3 = await globalCollection.insertMany(productsToInsert3);
+    console.log(`${insertedProducts3.insertedCount} products inserted to the ${MONGO_COLLECTION_NAME} collection.`);
+
     process.exit(0);
   } catch (error) {
     console.error(error);
